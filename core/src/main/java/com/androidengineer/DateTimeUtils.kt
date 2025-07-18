@@ -4,7 +4,7 @@ import android.icu.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-inline fun formatDate(input: String): String {
+inline fun formatDateTime(input: String): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH)
     val outputFormat = SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.ENGLISH)
 
@@ -15,4 +15,11 @@ inline fun formatDate(input: String): String {
     } catch (e: Exception) {
         "Invalid date"
     }
+}
+
+fun formatDate(input: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+    val date = inputFormat.parse(input)
+    return outputFormat.format(date)
 }

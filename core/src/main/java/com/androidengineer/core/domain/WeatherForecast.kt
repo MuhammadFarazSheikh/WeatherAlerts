@@ -1,5 +1,6 @@
 package com.androidengineer.core.domain
 
+import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 data class WeatherForecast(
@@ -36,17 +37,20 @@ data class Current(
     val windSpeedKMPH: String get() = "${wind_kph.roundToInt()} km/h"
 }
 
+@Serializable
 data class Condition(
     val text: String = "", val icon: String = "", val code: Int = -1
 ) {
     val fullIconUrl: String get() = "https:$icon"
 }
 
+@Serializable
 data class Forecast(
     val forecastday: List<Forecastday> = emptyList()
 
 )
 
+@Serializable
 data class Forecastday(
     val date: String = "",
     val day: Day = Day(),
@@ -54,6 +58,7 @@ data class Forecastday(
     val hour: List<Hour> = emptyList()
 )
 
+@Serializable
 data class Day(
     val maxtemp_c: Double = 0.0,
     val maxtemp_f: Double = 0.0,
@@ -70,14 +75,20 @@ data class Day(
     val daily_chance_of_snow: Int = -1,
     val condition: Condition = Condition(),
     val uv: Double = 0.0
-)
+) {
+    val tempCentigrade: String get() = "${maxtemp_c.roundToInt()}\u00B0C"
+    val humidityPercent: String get() = "$avghumidity%"
+    val windSpeedKMPH: String get() = "${maxwind_kph.roundToInt()} km/h"
+}
 
+@Serializable
 data class Astro(
     val sunrise: String = "",
     val sunset: String = "",
     val moonrise: String = "",
 )
 
+@Serializable
 data class Hour(
     val time: String = "",
     val temp_c: Double = 0.0,
@@ -95,3 +106,9 @@ data class Hour(
     val chance_of_snow: Int = -1,
     val uv: Double = 0.0
 )
+{
+    val tempCentigrade: String get() = "${temp_c.roundToInt()}\u00B0C"
+    val feelsLikeCentigrade: String get() = "${feelslike_c.roundToInt()}\u00B0C"
+    val humidityPercent: String get() = "$humidity%"
+    val windSpeedKMPH: String get() = "${wind_kph.roundToInt()} km/h"
+}

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.android)
     kotlin("kapt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -45,7 +46,9 @@ android {
 
 dependencies {
 
-    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.coil.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

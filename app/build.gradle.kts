@@ -61,4 +61,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(project(":core"))
     implementation(project(":feature-currentweather"))
+    implementation(project(":feature-moreforcast"))
 }

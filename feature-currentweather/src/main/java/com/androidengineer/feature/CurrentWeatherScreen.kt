@@ -2,9 +2,9 @@ package com.androidengineer.feature
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,14 +29,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.androidengineer.formatDate
+import com.androidengineer.core.getWindDirection
+import com.androidengineer.core.navigateToMoreForecastScreen
+import com.androidengineer.formatDateTime
 
 @Composable
-fun CurrentWeatherScreen() {
+fun CurrentWeatherScreen(navHostController: NavHostController) {
 
     val currentWeatherViewModel: CurrentWeatherViewModel = hiltViewModel()
     val state = currentWeatherViewModel.currentWeatherDataState.collectAsStateWithLifecycle().value
+    val isPermissionGranted = remember { mutableStateOf(false) }
+
+    CheckLocationPermission { permissionGranted ->
+        if(permissionGranted)
+        {
+            isPermissionGranted.value = true
+        }
+    }
+
+    if(isPermissionGranted.value)
+    {
+        GetUserLocation { location ->
+            println(location?.latitude.toString()+" "+location?.longitude)
+            location?.let { loc ->
+                currentWeatherViewModel.getCurrentWeatherData(loc)
+            }
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
@@ -47,14 +70,14 @@ fun CurrentWeatherScreen() {
             .fillMaxHeight(), content = {
             Text(
                 modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 0.dp),
-                text = state.location.name+", "+state.location.country,
+                text = state.location.name + ", " + state.location.country,
                 fontSize = 25.sp,
                 color = Color.Black
             )
 
             Text(
                 modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp),
-                text = formatDate(state.location.localtime),
+                text = formatDateTime(state.location.localtime),
                 fontSize = 18.sp,
                 color = Color.Black
             )
@@ -82,12 +105,14 @@ fun CurrentWeatherScreen() {
                     )
                 })
 
-            Row(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .padding(40.dp, 0.dp, 40.dp, 0.dp)
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
                 content = {
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -96,7 +121,7 @@ fun CurrentWeatherScreen() {
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(10.dp)
-                            .wrapContentWidth()
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         content = {
 
@@ -116,9 +141,10 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
 
+                            Spacer(modifier = Modifier.weight(1f))
+
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp)
                                     .wrapContentWidth()
                                     .wrapContentHeight(),
                                 text = state.current.humidityPercent,
@@ -130,19 +156,20 @@ fun CurrentWeatherScreen() {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
                             .background(
                                 color = colorResource(R.color.light_white),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(10.dp)
-                            .wrapContentWidth()
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         content = {
 
                             Image(
                                 modifier = Modifier.size(30.dp),
                                 painter = painterResource(R.drawable.wind),
-                                contentDescription = "Humidity icon"
+                                contentDescription = "Wind icon"
                             )
 
                             Text(
@@ -155,9 +182,10 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
 
+                            Spacer(modifier = Modifier.weight(1f))
+
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp)
                                     .wrapContentWidth()
                                     .wrapContentHeight(),
                                 text = state.current.windSpeedKMPH,
@@ -165,24 +193,17 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
                         })
-                })
 
-            Row(
-                modifier = Modifier
-                    .padding(0.dp, 20.dp, 0.dp, 0.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                content = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
                             .background(
                                 color = colorResource(R.color.light_white),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(10.dp)
-                            .wrapContentWidth()
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         content = {
 
@@ -202,12 +223,13 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
 
+                            Spacer(modifier = Modifier.weight(1f))
+
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp)
                                     .wrapContentWidth()
                                     .wrapContentHeight(),
-                                text = state.current.wind_dir,
+                                text = getWindDirection(state.current.wind_dir),
                                 fontSize = 15.sp,
                                 color = Color.Black
                             )
@@ -216,12 +238,13 @@ fun CurrentWeatherScreen() {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
                             .background(
                                 color = colorResource(R.color.light_white),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(10.dp)
-                            .wrapContentWidth()
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         content = {
 
@@ -241,9 +264,10 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
 
+                            Spacer(modifier = Modifier.weight(1f))
+
                             Text(
                                 modifier = Modifier
-                                    .padding(20.dp, 0.dp, 0.dp, 0.dp)
                                     .wrapContentWidth()
                                     .wrapContentHeight(),
                                 text = state.current.feelsLikeCentigrade,
@@ -251,22 +275,24 @@ fun CurrentWeatherScreen() {
                                 color = Color.Black
                             )
                         })
-                })
+
+                }
+            )
 
             TextButton(
                 modifier = Modifier
                     .padding(0.dp, 20.dp, 0.dp, 0.dp)
                     .wrapContentWidth()
                     .wrapContentHeight(), onClick = {
-
-            }, content = {
-                Text(
-                    text = "3 Days Weather Forcast", style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        textDecoration = TextDecoration.Underline
+                    navHostController.navigateToMoreForecastScreen(state.forecast)
+                }, content = {
+                    Text(
+                        text = "3 Days Weather Forcast", style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            textDecoration = TextDecoration.Underline
+                        )
                     )
-                )
-            })
+                })
         })
 }

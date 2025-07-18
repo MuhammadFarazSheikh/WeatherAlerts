@@ -23,3 +23,4 @@ rootProject.name = "WeatherAlerts"
 include(":app")
 include(":feature-currentweather")
 include(":core")
+include(":feature-moreforcast")
