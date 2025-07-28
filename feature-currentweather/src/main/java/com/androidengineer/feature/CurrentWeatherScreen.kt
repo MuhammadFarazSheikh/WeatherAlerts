@@ -1,19 +1,17 @@
 package com.androidengineer.feature
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,278 +19,175 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.androidengineer.core.getWindDirection
-import com.androidengineer.core.navigateToMoreForecastScreen
-import com.androidengineer.formatDateTime
+import com.androidengineer.core.ui.UnderlinedTextButton
+import com.androidengineer.core.ui.WeatherDetail
+import com.androidengineer.core.utils.MessageDialoge
+import com.androidengineer.core.utils.ShowLoaderDialogue
+import com.androidengineer.core.utils.getWindDirection
+import com.androidengineer.core.ui.navigateToMoreForecastScreen
+import com.androidengineer.core.ui.navigateToSearchWeather
+import com.androidengineer.core.ui.theme.rememberAppThemeValues
+import com.androidengineer.core.utils.formatDateTime
 
 @Composable
 fun CurrentWeatherScreen(navHostController: NavHostController) {
 
+    val themeValues = rememberAppThemeValues()
+    val context = LocalContext.current
+    val activity = context as? Activity
     val currentWeatherViewModel: CurrentWeatherViewModel = hiltViewModel()
     val state = currentWeatherViewModel.currentWeatherDataState.collectAsStateWithLifecycle().value
     val isPermissionGranted = remember { mutableStateOf(false) }
 
     CheckLocationPermission { permissionGranted ->
-        if(permissionGranted)
-        {
+        if (permissionGranted) {
             isPermissionGranted.value = true
         }
     }
 
-    if(isPermissionGranted.value)
-    {
+    if (isPermissionGranted.value) {
         GetUserLocation { location ->
-            println(location?.latitude.toString()+" "+location?.longitude)
             location?.let { loc ->
                 currentWeatherViewModel.getCurrentWeatherData(loc)
             }
         }
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFFB3E5FC), Color(0xFFE1F5FE))
-                )
-            )
-            .fillMaxWidth()
-            .fillMaxHeight(), content = {
-            Text(
-                modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 0.dp),
-                text = state.location.name + ", " + state.location.country,
-                fontSize = 25.sp,
-                color = Color.Black
-            )
-
-            Text(
-                modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp),
-                text = formatDateTime(state.location.localtime),
-                fontSize = 18.sp,
-                color = Color.Black
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(0.dp, 20.dp, 0.dp, 0.dp)
-                    .wrapContentWidth()
-                    .wrapContentHeight(), content = {
-                    Image(
-                        modifier = Modifier.size(70.dp),
-                        painter = rememberAsyncImagePainter(state.current.condition.fullIconUrl),
-                        contentDescription = "Weather icon"
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(20.dp, 10.dp, 10.dp, 10.dp)
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = state.current.tempCentigrade,
-                        fontSize = 60.sp,
-                        color = Color.Black
-                    )
-                })
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(40.dp, 0.dp, 40.dp, 0.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                content = {
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .background(
-                                color = colorResource(R.color.light_white),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        content = {
-
-                            Image(
-                                modifier = Modifier.size(30.dp),
-                                painter = painterResource(R.drawable.humidity),
-                                contentDescription = "Humidity icon"
-                            )
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = "Humidity",
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = state.current.humidityPercent,
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-                        })
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                            .background(
-                                color = colorResource(R.color.light_white),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        content = {
-
-                            Image(
-                                modifier = Modifier.size(30.dp),
-                                painter = painterResource(R.drawable.wind),
-                                contentDescription = "Wind icon"
-                            )
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = "Wind",
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = state.current.windSpeedKMPH,
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-                        })
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                            .background(
-                                color = colorResource(R.color.light_white),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        content = {
-
-                            Image(
-                                modifier = Modifier.size(30.dp),
-                                painter = painterResource(R.drawable.wind_direction),
-                                contentDescription = "Wind direction icon"
-                            )
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = "Direction",
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = getWindDirection(state.current.wind_dir),
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-                        })
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                            .background(
-                                color = colorResource(R.color.light_white),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        content = {
-
-                            Image(
-                                modifier = Modifier.size(30.dp),
-                                painter = painterResource(R.drawable.feels_like),
-                                contentDescription = "Feels like icon"
-                            )
-
-                            Text(
-                                modifier = Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = "Feels",
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight(),
-                                text = state.current.feelsLikeCentigrade,
-                                fontSize = 15.sp,
-                                color = Color.Black
-                            )
-                        })
-
-                }
-            )
-
-            TextButton(
-                modifier = Modifier
-                    .padding(0.dp, 20.dp, 0.dp, 0.dp)
-                    .wrapContentWidth()
-                    .wrapContentHeight(), onClick = {
-                    navHostController.navigateToMoreForecastScreen(state.forecast)
-                }, content = {
-                    Text(
-                        text = "3 Days Weather Forcast", style = TextStyle(
-                            color = Color.Black,
-                            fontSize = 15.sp,
-                            textDecoration = TextDecoration.Underline
+    if (state.isLoading) {
+        ShowLoaderDialogue()
+    } else if (state.isError) {
+        MessageDialoge {
+            activity?.finish()
+        }
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(themeValues.colors.appBackgroundLightSkyBlue.toArgb()),
+                            Color(themeValues.colors.appBackgroundPastelBlue.toArgb())
                         )
                     )
-                })
-        })
+                )
+                .fillMaxWidth()
+                .fillMaxHeight(), content = {
+                Text(
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(
+                        themeValues.dimens.padding0,
+                        themeValues.dimens.padding20,
+                        themeValues.dimens.padding0,
+                        themeValues.dimens.padding0
+                    ), text = context.getString(
+                        com.androidengineer.core.R.string.two_strings_concate,
+                        state.location.name,
+                        state.location.country
+                    ), style = themeValues.typography.large, color = themeValues.colors.black
+                )
+
+                Text(
+                    modifier = Modifier.padding(
+                        themeValues.dimens.padding0,
+                        themeValues.dimens.padding10,
+                        themeValues.dimens.padding0,
+                        themeValues.dimens.padding0
+                    ),
+                    text = formatDateTime(state.location.localtime),
+                    style = themeValues.typography.medium,
+                    color = themeValues.colors.black
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .padding(
+                            themeValues.dimens.padding0,
+                            themeValues.dimens.padding20,
+                            themeValues.dimens.padding0,
+                            themeValues.dimens.padding0
+                        )
+                        .wrapContentWidth()
+                        .wrapContentHeight(), content = {
+                        Image(
+                            modifier = Modifier.size(70.dp),
+                            painter = rememberAsyncImagePainter(state.current.condition.fullIconUrl),
+                            contentDescription = "Weather icon"
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    themeValues.dimens.padding20,
+                                    themeValues.dimens.padding10,
+                                    themeValues.dimens.padding10,
+                                    themeValues.dimens.padding10
+                                )
+                                .wrapContentWidth()
+                                .wrapContentHeight(),
+                            text = state.current.tempCentigrade,
+                            style = themeValues.typography.extraLarge,
+                            color = themeValues.colors.black
+                        )
+                    })
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                        .padding(
+                            themeValues.dimens.padding40,
+                            themeValues.dimens.padding0,
+                            themeValues.dimens.padding40,
+                            themeValues.dimens.padding0
+                        )
+                        .fillMaxWidth()
+                        .wrapContentHeight(), content = {
+
+                        WeatherDetail(
+                            icon = R.drawable.humidity,
+                            title = "Humidity",
+                            value = state.current.humidityPercent
+                        )
+
+                        WeatherDetail(
+                            icon = R.drawable.wind,
+                            title = "Wind",
+                            value = state.current.windSpeedKMPH
+                        )
+
+                        WeatherDetail(
+                            icon = R.drawable.wind_direction,
+                            title = "Direction",
+                            value = getWindDirection(state.current.wind_dir)
+                        )
+
+                        WeatherDetail(
+                            icon = R.drawable.feels_like,
+                            title = "Feels",
+                            value = state.current.feelsLikeCentigrade
+                        )
+
+                    })
+
+                UnderlinedTextButton(
+                    "3 Days Weather Forcast",
+                    {
+                        navHostController.navigateToMoreForecastScreen(state?.forecast!!)
+                    },
+                )
+
+                UnderlinedTextButton(
+                    "Search Weather",
+                    {
+                        navHostController.navigateToSearchWeather()
+                    },
+                )
+            })
+    }
 }

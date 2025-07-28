@@ -5,8 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.androidengineer.core.MORE_FORECAST_NAVIGATION_ROUTE
-import com.androidengineer.core.domain.Forecast
+import com.androidengineer.core.ui.MORE_FORECAST_NAVIGATION_ROUTE
+import com.androidengineer.core.domain.model.Forecast
 import com.androidengineer.feature_moreforcast.MoreForecastScreenTabs
 import kotlinx.serialization.json.Json
 

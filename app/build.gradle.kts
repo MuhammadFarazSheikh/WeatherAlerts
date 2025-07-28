@@ -62,4 +62,5 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":feature-currentweather"))
     implementation(project(":feature-moreforcast"))
+    implementation(project(":feature-searchweather"))
 }

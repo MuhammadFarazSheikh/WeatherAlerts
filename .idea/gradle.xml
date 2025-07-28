@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/feature-currentweather" />
             <option value="$PROJECT_DIR$/feature-moreforcast" />
+            <option value="$PROJECT_DIR$/feature-searchweather" />
           </set>
         </option>
       </GradleProjectSettings>

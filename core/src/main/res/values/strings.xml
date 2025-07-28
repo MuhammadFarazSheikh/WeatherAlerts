@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">WeatherAlerts</string>
+    <string name="two_strings_concate">%1$s \n%2$s</string>
+</resources>

@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.WindowInsetsControllerCompat
+import com.androidengineer.core.ui.theme.LocalMyColors
+import com.androidengineer.core.ui.theme.MyAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,11 +21,14 @@ class MainActivity : AppCompatActivity() {
             ComposeView(this).apply {
                 setContent {
                     val window = (context as Activity).window
-                    SideEffect {
-                        window.statusBarColor = Color(0xFFB3E5FC).toArgb()
-                        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+                    MyAppTheme {
+                        val color = LocalMyColors.current
+                        SideEffect {
+                            window.statusBarColor = Color(color.appBackgroundLightSkyBlue.toArgb()).toArgb()
+                            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+                        }
+                        MainNavigation()
                     }
-                    MainNavigation()
                 }
             })
 

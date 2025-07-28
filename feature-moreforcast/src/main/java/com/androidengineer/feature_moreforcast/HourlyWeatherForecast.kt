@@ -22,182 +22,40 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.androidengineer.core.domain.Hour
-import com.androidengineer.core.getWindDirection
+import com.androidengineer.core.domain.model.Hour
+import com.androidengineer.core.ui.WeatherDetail
+import com.androidengineer.core.ui.theme.rememberAppThemeValues
 
 @Composable
 fun HourlyWeatherForecast(hour: Hour) {
+
+    val themeValues = rememberAppThemeValues()
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(0.dp, 0.dp, 15.dp, 0.dp)
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .padding(
+                themeValues.dimens.padding0,
+                themeValues.dimens.padding0,
+                themeValues.dimens.padding15,
+                themeValues.dimens.padding0
+            )
             .width(280.dp)
-            .wrapContentHeight(),
-        content = {
+            .wrapContentHeight(), content = {
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(
-                        color = colorResource(R.color.light_white),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                content = {
+            WeatherDetail(
+                icon = R.drawable.clock, title = "Time", value = hour.time.split(" ").last()
+            )
 
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(R.drawable.clock),
-                        contentDescription = "Temperature icon"
-                    )
+            WeatherDetail(
+                icon = R.drawable.feels_like, title = "Temperature", value = hour.tempCentigrade
+            )
 
-                    Text(
-                        modifier = Modifier
-                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = "Time",
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
+            WeatherDetail(
+                icon = R.drawable.humidity, title = "Humidity", value = hour.humidityPercent
+            )
 
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = hour.time.split(" ").last(),
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-                })
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                    .background(
-                        color = colorResource(R.color.light_white),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                content = {
-
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = rememberAsyncImagePainter(hour.condition.fullIconUrl),
-                        contentDescription = "Temperature icon"
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = "Temperature",
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = hour.tempCentigrade,
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-                })
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                    .background(
-                        color = colorResource(R.color.light_white),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                content = {
-
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(R.drawable.humidity),
-                        contentDescription = "Humidity icon"
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = "Humidity",
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = hour.humidityPercent,
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-                })
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(0.dp, 10.dp, 0.dp, 0.dp)
-                    .background(
-                        color = colorResource(R.color.light_white),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                content = {
-
-                    Image(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(R.drawable.feels_like),
-                        contentDescription = "Feels like icon"
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = "Feels",
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        text = hour.feelsLikeCentigrade,
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-                })
-
-        }
-    )
+            WeatherDetail(
+                icon = R.drawable.feels_like, title = "Feels", value = hour.feelsLikeCentigrade
+            )
+        })
 }
