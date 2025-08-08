@@ -46,7 +46,10 @@ android {
 
 dependencies {
 
-    implementation(libs.play.services.location)
+    testImplementation(libs.turbine)
+    testImplementation(libs.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
     implementation(libs.androidx.core.ktx)

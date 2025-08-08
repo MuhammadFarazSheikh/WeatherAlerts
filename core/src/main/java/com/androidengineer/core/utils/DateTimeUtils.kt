@@ -1,25 +1,20 @@
 package com.androidengineer.core.utils
 
 import android.icu.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
-inline fun formatDateTime(input: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH)
-    val outputFormat = SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.ENGLISH)
+const val DATE_TIME_FORMAT_OLD = "yyyy-MM-dd HH:mm"
+const val DATE_TIME_FORMAT_NEW = "EEEE, MMMM dd, yyyy"
+const val DATE_FORMAT_OLD = "yyyy-MM-dd"
+const val DATE_FORMAT_NEW = "MMMM d, yyyy"
 
-    return try {
-        val trimmedInput = input.trim()
-        val date: Date = inputFormat.parse(trimmedInput) ?: return ""
-        outputFormat.format(date)
+inline fun formatDateTime(input: String, oldFormat: String, newFormat: String): String {
+    try {
+        val inputFormat = SimpleDateFormat(oldFormat, Locale.ENGLISH)
+        val outputFormat = SimpleDateFormat(newFormat, Locale.ENGLISH)
+        return outputFormat.format(inputFormat.parse(input.trim()))
     } catch (e: Exception) {
-        "Invalid date"
+        println(e.message)
+        return ""
     }
-}
-
-fun formatDate(input: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
-    val date = inputFormat.parse(input)
-    return outputFormat.format(date)
 }

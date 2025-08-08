@@ -26,27 +26,25 @@ class SearchWeatherViewModel @Inject constructor(
                     when (weather) {
                         is Result.Success -> {
                             _searchMutableState.value =
-                                _searchMutableState.value.copy(isLoading = false)
-                            println("Success = " + weather.data)
+                                _searchMutableState.value.copy(
+                                    isLoading = false,
+                                    loaded = true
+                                )
                             _searchMutableState.value = weather.data
-                            _searchMutableState.value =
-                                _searchMutableState.value.copy(loaded = true)
                         }
 
                         is Result.Error -> {
                             _searchMutableState.value =
-                                _searchMutableState.value.copy(loaded = false)
-                            _searchMutableState.value =
-                                _searchMutableState.value.copy(isLoading = false)
-                            println("Error = " + weather.message)
-                            _searchMutableState.value =
-                                _searchMutableState.value.copy(isError = true)
+                                _searchMutableState.value.copy(
+                                    loaded = false,
+                                    isLoading = false,
+                                    isError = true
+                                )
                         }
 
                         is Result.Loading -> {
                             _searchMutableState.value =
                                 _searchMutableState.value.copy(isLoading = true)
-                            println("Loading")
                         }
                     }
                 }

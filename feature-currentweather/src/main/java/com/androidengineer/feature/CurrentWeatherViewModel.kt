@@ -1,6 +1,5 @@
 package com.androidengineer.feature
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidengineer.core.domain.usecases.CurrentWeatherUseCase
@@ -20,26 +19,32 @@ class CurrentWeatherViewModel @Inject constructor(
     private val _currentWeatherDataState = MutableStateFlow(WeatherForecast())
     val currentWeatherDataState: StateFlow<WeatherForecast> = _currentWeatherDataState
 
-    fun getCurrentWeatherData(location: Location) {
+    fun getCurrentWeatherData(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             currentWeatherUseCase(
-                "5a5bf784f73546f48cb225751252706", location.latitude, location.longitude, 3
+                "5a5bf784f73546f48cb225751252706", latitude, longitude, 3
             ).collect { weather ->
                 when (weather) {
                     is Result.Success -> {
                         _currentWeatherDataState.value = weather.data
-                        _currentWeatherDataState.value.copy(isLoading = false)
+                        _currentWeatherDataState.value =
+                            _currentWeatherDataState.value.copy(
+                                isLoading = false
+                            )
                     }
 
                     is Result.Error -> {
-                        _currentWeatherDataState.value = _currentWeatherDataState.value.copy(isLoading = false)
-                        _currentWeatherDataState.value = _currentWeatherDataState.value.copy(isError = true)
-                        println("error = "+weather.message)
+                        _currentWeatherDataState.value =
+                            _currentWeatherDataState.value.copy(
+                                isLoading = false,
+                                isError = true
+                            )
+                        println("error = " + weather.message)
                     }
 
                     is Result.Loading -> {
-                        println("loading")
-                        _currentWeatherDataState.value = _currentWeatherDataState.value.copy(isLoading = true)
+                        _currentWeatherDataState.value =
+                            _currentWeatherDataState.value.copy(isLoading = true)
                     }
                 }
             }

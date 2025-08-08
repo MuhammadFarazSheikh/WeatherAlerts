@@ -19,7 +19,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.androidengineer.core.domain.model.Forecast
 import com.androidengineer.core.ui.theme.rememberAppThemeValues
-import com.androidengineer.core.utils.formatDate
+import com.androidengineer.core.utils.DATE_FORMAT_NEW
+import com.androidengineer.core.utils.DATE_FORMAT_OLD
+import com.androidengineer.core.utils.formatDateTime
 
 @Composable
 fun MoreForecastScreenTabs(forecast: Forecast) {
@@ -58,7 +60,13 @@ fun MoreForecastScreenTabs(forecast: Forecast) {
                                 }
                             }
                         },
-                        text = { Text(formatDate(date!!)) }
+                        text = { Text(
+                            formatDateTime(
+                                date!!,
+                                DATE_FORMAT_OLD,
+                                DATE_FORMAT_NEW
+                            )
+                        ) }
                     )
                 }
             }

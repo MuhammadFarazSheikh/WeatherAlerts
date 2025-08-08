@@ -35,6 +35,10 @@ import com.androidengineer.core.utils.getWindDirection
 import com.androidengineer.core.ui.navigateToMoreForecastScreen
 import com.androidengineer.core.ui.navigateToSearchWeather
 import com.androidengineer.core.ui.theme.rememberAppThemeValues
+import com.androidengineer.core.utils.CheckLocationPermission
+import com.androidengineer.core.utils.DATE_TIME_FORMAT_NEW
+import com.androidengineer.core.utils.DATE_TIME_FORMAT_OLD
+import com.androidengineer.core.utils.GetUserLocation
 import com.androidengineer.core.utils.formatDateTime
 
 @Composable
@@ -56,7 +60,7 @@ fun CurrentWeatherScreen(navHostController: NavHostController) {
     if (isPermissionGranted.value) {
         GetUserLocation { location ->
             location?.let { loc ->
-                currentWeatherViewModel.getCurrentWeatherData(loc)
+                currentWeatherViewModel.getCurrentWeatherData(loc.latitude,loc.longitude)
             }
         }
     }
@@ -101,7 +105,11 @@ fun CurrentWeatherScreen(navHostController: NavHostController) {
                         themeValues.dimens.padding0,
                         themeValues.dimens.padding0
                     ),
-                    text = formatDateTime(state.location.localtime),
+                    text = formatDateTime(
+                        state.location.localtime,
+                        DATE_TIME_FORMAT_OLD,
+                        DATE_TIME_FORMAT_NEW
+                    ),
                     style = themeValues.typography.medium,
                     color = themeValues.colors.black
                 )
