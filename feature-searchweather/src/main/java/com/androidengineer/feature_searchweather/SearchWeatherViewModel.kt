@@ -25,12 +25,12 @@ class SearchWeatherViewModel @Inject constructor(
                 .collect { weather ->
                     when (weather) {
                         is Result.Success -> {
+                            _searchMutableState.value = weather.data
                             _searchMutableState.value =
                                 _searchMutableState.value.copy(
                                     isLoading = false,
                                     loaded = true
                                 )
-                            _searchMutableState.value = weather.data
                         }
 
                         is Result.Error -> {
