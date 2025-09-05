@@ -5,13 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,16 +29,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import com.androidengineer.core.ui.GoogleMaps
-import com.androidengineer.core.ui.WeatherDetail
+import com.androidengineer.core.ui.WeatherForecast
 import com.androidengineer.core.ui.theme.rememberAppThemeValues
-import com.androidengineer.core.utils.DATE_TIME_FORMAT_NEW
-import com.androidengineer.core.utils.DATE_TIME_FORMAT_OLD
 import com.androidengineer.core.utils.MessageDialoge
 import com.androidengineer.core.utils.ShowLoaderDialogue
-import com.androidengineer.core.utils.getWindDirection
-import com.androidengineer.core.utils.formatDateTime
 
 @Composable
 fun SearchWeatherScreen(navHostController: NavHostController) {
@@ -123,117 +115,7 @@ fun SearchWeatherScreen(navHostController: NavHostController) {
                 })
 
             if (state.loaded) {
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally, content = {
-                        Text(
-                            modifier = Modifier.padding(
-                                themeValues.dimens.padding0,
-                                themeValues.dimens.padding20,
-                                themeValues.dimens.padding0,
-                                themeValues.dimens.padding0
-                            ),
-                            text = state.location.name + ",\n" + state.location.country,
-                            style = themeValues.typography.large,
-                            color = themeValues.colors.black
-                        )
-
-                        Text(
-                            modifier = Modifier.padding(
-                                themeValues.dimens.padding0,
-                                themeValues.dimens.padding10,
-                                themeValues.dimens.padding0,
-                                themeValues.dimens.padding0
-                            ),
-                            text = formatDateTime(
-                                state.location.localtime,
-                                DATE_TIME_FORMAT_OLD,
-                                DATE_TIME_FORMAT_NEW
-                                ),
-                            style = themeValues.typography.medium,
-                            color = themeValues.colors.black
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(
-                                    themeValues.dimens.padding0,
-                                    themeValues.dimens.padding20,
-                                    themeValues.dimens.padding0,
-                                    themeValues.dimens.padding0
-                                )
-                                .wrapContentWidth()
-                                .wrapContentHeight(),
-                            content = {
-                                Image(
-                                    modifier = Modifier.size(70.dp),
-                                    painter = rememberAsyncImagePainter(state.current.condition.fullIconUrl),
-                                    contentDescription = "Weather icon"
-                                )
-
-                                Text(
-                                    modifier = Modifier
-                                        .padding(
-                                            themeValues.dimens.padding20,
-                                            themeValues.dimens.padding10,
-                                            themeValues.dimens.padding10,
-                                            themeValues.dimens.padding10
-                                        )
-                                        .wrapContentWidth()
-                                        .wrapContentHeight(),
-                                    text = state.current.tempCentigrade,
-                                    style = themeValues.typography.extraLarge,
-                                    color = themeValues.colors.black
-                                )
-                            })
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(
-                                    themeValues.dimens.padding40,
-                                    themeValues.dimens.padding0,
-                                    themeValues.dimens.padding40,
-                                    themeValues.dimens.padding0
-                                )
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            content = {
-
-                                WeatherDetail(
-                                    icon = R.drawable.humidity,
-                                    title = "Humidity",
-                                    value = state.current.humidityPercent
-                                )
-
-                                WeatherDetail(
-                                    icon = R.drawable.wind,
-                                    title = "Wind",
-                                    value = state.current.windSpeedKMPH
-                                )
-
-                                WeatherDetail(
-                                    icon = R.drawable.wind_direction,
-                                    title = "Direction",
-                                    value = getWindDirection(state.current.wind_dir)
-                                )
-
-                                WeatherDetail(
-                                    icon = R.drawable.feels_like,
-                                    title = "Feels",
-                                    value = state.current.feelsLikeCentigrade
-                                )
-
-                                GoogleMaps(
-                                    state.location.lat,
-                                    state.location.lon,
-                                    state.location.name,
-                                    state.location.country
-                                )
-
-                            })
-                    })
+                WeatherForecast(state)
             }
         })
 
