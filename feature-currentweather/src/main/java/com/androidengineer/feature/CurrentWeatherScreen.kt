@@ -3,14 +3,18 @@ package com.androidengineer.feature
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,32 +25,26 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import com.androidengineer.core.ui.UnderlinedTextButton
-import com.androidengineer.core.ui.WeatherDetail
+import com.androidengineer.core.ui.WeatherForecast
 import com.androidengineer.core.utils.MessageDialoge
 import com.androidengineer.core.utils.ShowLoaderDialogue
-import com.androidengineer.core.utils.getWindDirection
 import com.androidengineer.core.ui.navigateToMoreForecastScreen
 import com.androidengineer.core.ui.navigateToSearchWeather
 import com.androidengineer.core.ui.theme.rememberAppThemeValues
 import com.androidengineer.core.utils.CheckLocationPermission
-import com.androidengineer.core.utils.DATE_TIME_FORMAT_NEW
-import com.androidengineer.core.utils.DATE_TIME_FORMAT_OLD
 import com.androidengineer.core.utils.GetUserLocation
-import com.androidengineer.core.utils.formatDateTime
 
 @Composable
 fun CurrentWeatherScreen(navHostController: NavHostController) {
 
     val themeValues = rememberAppThemeValues()
-    val context = LocalContext.current
-    val activity = context as? Activity
+    val activity = LocalContext.current as? Activity
     val currentWeatherViewModel: CurrentWeatherViewModel = hiltViewModel()
     val state = currentWeatherViewModel.currentWeatherDataState.collectAsStateWithLifecycle().value
     val isPermissionGranted = remember { mutableStateOf(false) }
@@ -60,7 +58,7 @@ fun CurrentWeatherScreen(navHostController: NavHostController) {
     if (isPermissionGranted.value) {
         GetUserLocation { location ->
             location?.let { loc ->
-                currentWeatherViewModel.getCurrentWeatherData(loc.latitude,loc.longitude)
+                currentWeatherViewModel.getCurrentWeatherData(loc.latitude, loc.longitude)
             }
         }
     }
@@ -73,7 +71,7 @@ fun CurrentWeatherScreen(navHostController: NavHostController) {
         }
     } else {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
@@ -84,118 +82,103 @@ fun CurrentWeatherScreen(navHostController: NavHostController) {
                 )
                 .fillMaxWidth()
                 .fillMaxHeight(), content = {
-                Text(
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(
-                        themeValues.dimens.padding0,
-                        themeValues.dimens.padding20,
-                        themeValues.dimens.padding0,
-                        themeValues.dimens.padding0
-                    ), text = context.getString(
-                        com.androidengineer.core.R.string.two_strings_concate,
-                        state.location.name,
-                        state.location.country
-                    ), style = themeValues.typography.large, color = themeValues.colors.black
-                )
-
-                Text(
-                    modifier = Modifier.padding(
-                        themeValues.dimens.padding0,
-                        themeValues.dimens.padding10,
-                        themeValues.dimens.padding0,
-                        themeValues.dimens.padding0
-                    ),
-                    text = formatDateTime(
-                        state.location.localtime,
-                        DATE_TIME_FORMAT_OLD,
-                        DATE_TIME_FORMAT_NEW
-                    ),
-                    style = themeValues.typography.medium,
-                    color = themeValues.colors.black
-                )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = {
+                            navHostController.navigateToSearchWeather()
+                        })
                         .padding(
-                            themeValues.dimens.padding0,
-                            themeValues.dimens.padding20,
-                            themeValues.dimens.padding0,
+                            themeValues.dimens.padding40,
+                            themeValues.dimens.padding15,
+                            themeValues.dimens.padding40,
                             themeValues.dimens.padding0
                         )
-                        .wrapContentWidth()
+                        .background(
+                            color = colorResource(com.androidengineer.core.R.color.light_white),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .padding(themeValues.dimens.padding10)
+                        .fillMaxWidth()
                         .wrapContentHeight(), content = {
+
                         Image(
-                            modifier = Modifier.size(70.dp),
-                            painter = rememberAsyncImagePainter(state.current.condition.fullIconUrl),
-                            contentDescription = "Weather icon"
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.search_weather),
+                            contentDescription = ""
                         )
 
                         Text(
                             modifier = Modifier
                                 .padding(
-                                    themeValues.dimens.padding20,
                                     themeValues.dimens.padding10,
-                                    themeValues.dimens.padding10,
-                                    themeValues.dimens.padding10
+                                    themeValues.dimens.padding0,
+                                    themeValues.dimens.padding0,
+                                    themeValues.dimens.padding0
                                 )
                                 .wrapContentWidth()
                                 .wrapContentHeight(),
-                            text = state.current.tempCentigrade,
-                            style = themeValues.typography.extraLarge,
+                            text = "Search Weather...",
+                            style = themeValues.typography.small,
                             color = themeValues.colors.black
                         )
                     })
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                WeatherForecast(
+                    state
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = {
+                                navHostController.navigateToMoreForecastScreen(state?.forecast!!)
+                            })
                         .padding(
                             themeValues.dimens.padding40,
-                            themeValues.dimens.padding0,
+                            themeValues.dimens.padding15,
                             themeValues.dimens.padding40,
                             themeValues.dimens.padding0
                         )
+                        .background(
+                            color = colorResource(com.androidengineer.core.R.color.light_white),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .padding(themeValues.dimens.padding10)
                         .fillMaxWidth()
                         .wrapContentHeight(), content = {
 
-                        WeatherDetail(
-                            icon = R.drawable.humidity,
-                            title = "Humidity",
-                            value = state.current.humidityPercent
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    themeValues.dimens.padding10,
+                                    themeValues.dimens.padding0,
+                                    themeValues.dimens.padding0,
+                                    themeValues.dimens.padding0
+                                )
+                                .wrapContentWidth()
+                                .wrapContentHeight(),
+                            text = "3 Days Weather Forecast",
+                            style = themeValues.typography.small,
+                            color = themeValues.colors.black
                         )
 
-                        WeatherDetail(
-                            icon = R.drawable.wind,
-                            title = "Wind",
-                            value = state.current.windSpeedKMPH
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
                         )
 
-                        WeatherDetail(
-                            icon = R.drawable.wind_direction,
-                            title = "Direction",
-                            value = getWindDirection(state.current.wind_dir)
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.arrow_right),
+                            contentDescription = ""
                         )
-
-                        WeatherDetail(
-                            icon = R.drawable.feels_like,
-                            title = "Feels",
-                            value = state.current.feelsLikeCentigrade
-                        )
-
                     })
-
-                UnderlinedTextButton(
-                    "3 Days Weather Forcast",
-                    {
-                        navHostController.navigateToMoreForecastScreen(state?.forecast!!)
-                    },
-                )
-
-                UnderlinedTextButton(
-                    "Search Weather",
-                    {
-                        navHostController.navigateToSearchWeather()
-                    },
-                )
             })
     }
 }

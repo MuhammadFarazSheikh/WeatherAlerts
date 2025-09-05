@@ -13,8 +13,6 @@ import com.androidengineer.feature_searchweather.searchWeatherScreen
 fun MainNavigation(
     navHostController: NavHostController = rememberNavController(),
 ) {
-
-
     NavHost(
         navController = navHostController,
         startDestination = CURRENT_WEATHER_NAVIGATION_ROUTE,

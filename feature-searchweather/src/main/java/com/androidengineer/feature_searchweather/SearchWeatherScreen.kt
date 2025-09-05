@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.androidengineer.core.ui.GoogleMaps
 import com.androidengineer.core.ui.WeatherDetail
 import com.androidengineer.core.ui.theme.rememberAppThemeValues
 import com.androidengineer.core.utils.DATE_TIME_FORMAT_NEW
@@ -222,6 +223,13 @@ fun SearchWeatherScreen(navHostController: NavHostController) {
                                     icon = R.drawable.feels_like,
                                     title = "Feels",
                                     value = state.current.feelsLikeCentigrade
+                                )
+
+                                GoogleMaps(
+                                    state.location.lat,
+                                    state.location.lon,
+                                    state.location.name,
+                                    state.location.country
                                 )
 
                             })
